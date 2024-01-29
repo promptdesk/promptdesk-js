@@ -109,3 +109,4 @@ lib
 *.tgz
 
 package-lock.json
+.vscode
