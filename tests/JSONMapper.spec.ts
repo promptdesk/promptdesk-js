@@ -6,7 +6,7 @@ import { JSONMapper } from '../src/index';
 
 let jmap = new JSONMapper()
 
-describe('JSON Mapper Loop', () => {
+describe('Map JSON to other JSON.', () => {
 
   it('map an opject', () => {
     

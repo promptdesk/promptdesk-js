@@ -1,9 +1,8 @@
 import { helloWorld, goodBye } from './functions';
+import { JSONMapper } from './JSONMapper';
+import { PromptDesk } from './PromptDesk';
 
-// @ts-ignore
-const { JSONMapper } = require('./JSONMapper');
-
-export {  helloWorld, JSONMapper };
+export {  helloWorld, JSONMapper, PromptDesk };
 
 // Create an object containing all named exports
 import * as namedExports from './index';
