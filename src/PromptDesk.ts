@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { memoize } from './utils';
 
 export class PromptDesk {
   private apiKey: string;
@@ -80,10 +81,9 @@ export class PromptDesk {
     }
   }
 
-  async cachedCall(payload: string, headers: string): Promise<any> {
-    // Implement cache logic here
-    return null;
-  }
+  cachedCall: any = memoize(async (payload: string, headers: any) => {
+    return await axios.post(`${this.serviceUrl}/api/generate`, payload, { headers })
+  })
 
   async generate(promptName: string, variables: any = {}, options?: {chain?: { uuid: string; name: string }, object?: boolean | false, cache?: boolean | false, classification?: any}): Promise<any> {
     if (!this.apiKey) {
@@ -117,10 +117,11 @@ export class PromptDesk {
 
       if (cache) {
         payload['cache'] = true;
+        response = await this.cachedCall(JSON.stringify(payload), headers);
+      } else {
+        response = await axios.post(`${this.serviceUrl}/api/generate`, payload, { headers });
       }
-
-      response = await axios.post(`${this.serviceUrl}/api/generate`, payload, { headers });
-
+      
       const message = response.data.message;
 
       let generatedString;
