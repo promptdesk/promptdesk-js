@@ -9,6 +9,9 @@ export class PromptDesk {
   constructor(obj: { apiKey?: string; serviceUrl?: string }) {
     this.apiKey = obj.apiKey || process.env.PROMPTDESK_API_KEY || '';
     this.serviceUrl = obj.serviceUrl || process.env.PROMPTDESK_SERVICE_URL || '';
+
+    //remove trailing slash
+    this.serviceUrl = this.serviceUrl.replace(/\/$/, '');
   }
 
   async ping(): Promise<string | null> {
