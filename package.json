@@ -1,6 +1,6 @@
 {
   "name": "promptdesk",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "description": "PromptDesk Javascript SDK",
   "exports": {
     ".": {

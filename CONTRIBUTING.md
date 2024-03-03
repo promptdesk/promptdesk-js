@@ -1,35 +1,75 @@
+# Contributing to PromptDesk
 
-# Promptdesk
-Promptdesk javascript/node SDK.
+Thank you for your interest in contributing to PromptDesk Python SDK! Here's a step-by-step guide to get started:
 
+## Setup
 
-# Contributing
+### Before you begin
 
-## Get Started
+Before you can start contributing, please ensure you have a PromptDesk development environment set up. If you haven't already, follow the [Contributing guide](https://promptdesk.ai/docs/contributing) to set up the PromptDesk development environment.
 
-1. Run `npm install` in your terminal
-1. Then run `npm run build`
-1. Update the `package.json` file "name" field with your own package name. Example `@username/package-name`
-1. Create an account with [npm](https://www.npmjs.com/signup) if you don't have one already. Also be sure to enable [two-factor authentication](https://docs.npmjs.com/configuring-two-factor-authentication)
-1. Sign in to your npm account in your terminal with `npm login`
-1. Run `npm publish --access=public` to publish your package
+### Step 1: Fork the Repository
 
-### Testing
+To contribute to PromptDesk, you'll need to fork the repository. Click on the "Fork" button at the top right corner of the repository page. This will create a copy of the repository under your GitHub account.
 
-1. Install developer dependencies using the following command in your terminal `npm i -D mocha @types/mocha chai @types/chai ts-node`
-1. Create a new file `.mocharc.json` in the root directory with the following contents:
-   ```json
-   {
-     "extension": ["ts"],
-     "spec": "./**/*.spec.ts",
-     "require": "ts-node/register"
-   }
-   ```
-1. Create a `tests` folder
-1. Create an `index.spec.ts` file in the `tests` folder
-1. Write unit tests in the `index.spec.ts` file to test the code in `index.ts`
-1. Add a `"test"` property in the `package.json` file and give it a value of `"mocha"`
-1. Run `npm test` in your terminal from the root folder of the project
+### Step 2: Clone the Repository
 
-## Source
-- https://snyk.io/blog/best-practices-create-modern-npm-package/
+Once you have forked the repository, you'll need to clone it to your local machine. Open your terminal and navigate to the directory where you want to clone the repository. Then run the following command:
+
+```
+git clone git@github.com:your-username/promptdesk.git
+```
+
+Replace `your-username` with your GitHub username.
+
+Go to the root directory of the cloned repository:
+
+```
+cd promptdesk-js
+```
+
+Open your favourite code editor to view source code files and make changes.
+
+### Step 3: Setup Environment
+
+Install required dependencies using the following command in your terminal:
+
+```
+npm install
+```
+
+### Step 4: Run Mocha Test
+
+To ensure that your development environment is set up correctly, run the following command in your terminal:
+
+```
+npm run test
+```
+
+## Making Changes
+
+### Step 1: Make Changes and Test
+
+Now you're ready to make changes to the codebase. You can start by fixing bugs, adding new features, or improving the documentation. Make sure to create a new branch for your changes. You can do this by running the following command in your terminal:
+
+```
+git checkout -b my-branch-name
+```
+
+Replace `my-branch-name` with a descriptive name for your branch.
+
+### Step 2: Submit a Pull Request
+
+When you're ready to submit your changes, push your branch to your forked repository:
+
+```
+git push origin my-branch-name
+```
+
+Then, navigate to the repository on GitHub and click on the "New Pull Request" button. Follow the instructions to submit your pull request.
+
+## Thank you!
+
+If you have any questions or feedback please reach out to us at feedback@promptdesk.ai.
+
+Thank you for your interest in contributing to PromptDesk! We appreciate your support.

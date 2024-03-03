@@ -27,23 +27,8 @@ describe('Calls promptdesk', () => {
     assert.equal(result, "pong");
   });
 
-  it('should return an error for no key' , async () => {
-    let pd_no_key = new PromptDesk({
-      serviceUrl: "http://localhost:4000",
-      apiKey: "INVALID_KEY"
-    })
-    //check if pd_no_key.generate("yoda-test") throws an error
-    try {
-      await pd_no_key.generate("yoda-test")
-    } catch (error) {
-      assert.equal(error, "Error: Invalid API Authorization");
-    }
-  });
-
   it('should generate a prompt', async function() {
-
     this.timeout(10000); // Set timeout to 10000 milliseconds (10 seconds)
-
 
     let result = await pd.generate("yoda-test")
     assert.isString(result);
@@ -124,3 +109,50 @@ describe('Convert string to object.', () => {
   })
 
 });
+
+
+describe('Test error handling', () => {
+
+  it('should return an error for an invalid API key' , async () => {
+    let pd_no_key = new PromptDesk({
+      serviceUrl: "http://localhost:4000",
+      apiKey: "INVALID_KEY"
+    })
+    //check if pd_no_key.generate("yoda-test") throws an error
+    try {
+      await pd_no_key.ping()
+    } catch (error:any) {
+      assert.equal(true, error.message.toLowerCase().includes("invalid"));
+    }
+  });
+
+  it('should return an error for an invalid service URL' , async () => {
+    let pd_wrong_service_url = new PromptDesk({
+      serviceUrl: "http://localhost:4757",
+      apiKey: "51cc56c3f7658fec052ce93f5659be194771b136dae2d8ba"
+    })
+    try {
+      await pd_wrong_service_url.ping()
+    } catch (error:any) {
+      assert.equal(true, error.message.toLowerCase().includes("service not found"));
+    }
+  });
+
+  it('should return an error for an invalid prompt' , async () => {
+    try {
+      await pd.generate("invalid-prompt")
+    } catch (error:any) {
+      assert.equal(true, error.message.toLowerCase().includes("not found"));
+    }
+  });
+
+  it('should return an error for prompt with missing variables' , async () => {
+    try {
+      await pd.generate("short-story-test")
+    } catch (error:any) {
+      assert.equal(true, error.message.toLowerCase().includes("variable"));
+      assert.equal(true, error.message.toLowerCase().includes("not found"));
+    }
+  });
+  
+})

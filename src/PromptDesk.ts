@@ -16,18 +16,30 @@ export class PromptDesk {
 
   async ping(): Promise<string | null> {
     try {
-      const response = await axios.get(`${this.serviceUrl}/ping`);
+      const headers = {
+        'Authorization': `Bearer ${this.apiKey}`,
+      };
+      const response = await axios.get(`${this.serviceUrl}/api/ping`, { headers });
       if (response.status === 200) {
         return response.data;
       } else {
-        console.error(`Failed: ${response.status} ${response.statusText}`);
-        return null;
+        // Log and throw error for non-200 status codes that Axios doesn't automatically reject
+        throw new Error(`FAILED: ${response.status}, data: ${JSON.stringify(response.data)}`);
       }
-    } catch (error) {
-      console.error(`Request failed: ${error}`);
-      return null;
+    } catch (error: any) {
+      if (error.response) {
+        // Here we handle errors that Axios caught, which includes a response (e.g., server errors like 500)
+        throw new Error(`${error.response.status}, data: ${error.response.data.message}`);
+      } else if (error.request) {
+        // The request was made but no response was received
+        throw new Error(`PromptDesk service not found.`);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        throw new Error(`Error setting up the request: ${error.response?.data?.error || error.message}`);
+      }
     }
   }
+  
 
   convertToObject(string:any) {
     // Check if input is already an object or an array
@@ -124,6 +136,11 @@ export class PromptDesk {
       } else {
         response = await axios.post(`${this.serviceUrl}/api/generate`, payload, { headers });
       }
+
+      if(response.status !== 200) {
+        // Log and throw error for non-200 status codes that Axios doesn't automatically reject
+        throw new Error(`FAILED: ${response.status}, data: ${JSON.stringify(response.data)}`);
+      }
       
       const message = response.data.message;
 
@@ -168,8 +185,17 @@ export class PromptDesk {
       }
 
       return generatedString;
-    } catch (error:any) {
-      throw new Error(`${error.response?.data?.error || error.message}`);
+    } catch (error: any) {
+      if (error.response) {
+        // Here we handle errors that Axios caught, which includes a response (e.g., server errors like 500)
+        throw new Error(`${error.response.status}, data: ${error.response.data.message}`);
+      } else if (error.request) {
+        // The request was made but no response was received
+        throw new Error(`PromptDesk service not found.`);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        throw new Error(`Error setting up the request: ${error.response?.data?.error || error.message}`);
+      }
     }
 
   }
