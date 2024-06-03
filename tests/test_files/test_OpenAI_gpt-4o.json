@@ -1,0 +1,121 @@
+{
+    "json_1": {
+        "messages": [
+            {
+                "role": "user",
+                "content": "How are you?"
+            },
+            {
+                "role": "assistant",
+                "content": "How are you, hmm? Fine, I hope, hmm?"
+            },
+            {
+                "role": "user",
+                "content": "What is your name?"
+            }
+        ],
+        "context": "Act as yoda.",
+        "model_parameters": {
+            "max_tokens": 256
+        }
+    },
+    "mapping_1": [
+        {
+            "sourceField": "messages",
+            "targetField": "messages",
+            "action": "mapArray",
+            "subRules": [
+                {
+                    "sourceField": "role",
+                    "targetField": "role"
+                },
+                {
+                    "sourceField": "content",
+                    "targetField": "content",
+                    "transformation": {
+                        "text": [
+                            "wrapInArray"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "sourceField": "context",
+            "targetField": "content",
+            "groupId": "context",
+            "prependTo": "messages",
+            "transformation": {
+                "text": [
+                    "wrapInArray"
+                ]
+            }
+        },
+        {
+            "sourceField": null,
+            "targetField": "role",
+            "groupId": "context",
+            "prependTo": "messages",
+            "default": "system"
+        },
+        {
+            "sourceField": null,
+            "targetField": "model",
+            "default": "gpt-4o-chat"
+        },
+        {
+            "sourceField": "model_parameters.temperature",
+            "targetField": "temperature",
+            "conditions": [
+                {
+                    "sourceField": "model_parameters.temperature",
+                    "check": "exists"
+                }
+            ]
+        },
+        {
+            "sourceField": "model_parameters.max_tokens",
+            "targetField": "max_tokens",
+            "conditions": [
+                {
+                    "sourceField": "model_parameters.max_tokens",
+                    "check": "exists"
+                }
+            ]
+        }
+    ],
+    "result_1": {
+        "messages": [
+            {
+                "content": [{
+                    "type": "text",
+                    "text": "Act as yoda."
+                }],
+                "role": "system"
+            },
+            {
+                "role": "user",
+                "content": [{
+                    "type": "text",
+                    "text": "How are you?"
+                }]
+            },
+            {
+                "role": "assistant",
+                "content": [{
+                    "type": "text",
+                    "text": "How are you, hmm? Fine, I hope, hmm?"
+                }]
+            },
+            {
+                "role": "user",
+                "content": [{
+                    "type": "text",
+                    "text": "What is your name?"
+                }]
+            }
+        ],
+        "model": "gpt-4o-chat",
+        "max_tokens": 256
+    }
+}

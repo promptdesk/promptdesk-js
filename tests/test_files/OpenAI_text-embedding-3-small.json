@@ -1,0 +1,92 @@
+{
+    "provider": "OpenAI",
+    "type": "embedding",
+    "name": "text-embedding-3-small",
+    "default": false,
+    "api_call": {
+        "url": "https://api.openai.com/v1/embeddings",
+        "method": "POST",
+        "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{OPENAI_API_KEY}}"
+        }
+    },
+    "request_mapping": [
+        {
+            "sourceField": "text_list",
+            "targetField": "input"
+        },
+        {
+            "sourceField": null,
+            "targetField": "model",
+            "default": "text-embedding-3-small"
+        }
+    ],
+    "response_mapping": [
+        {
+            "sourceField": "data.*",
+            "targetField": "embeddings",
+            "action": "mapArray",
+            "subRules": [
+                {
+                    "sourceField": "embedding",
+                    "targetField": "embedding"
+                },
+                {
+                    "sourceField": "index",
+                    "targetField": "index"
+                }
+            ]
+        }
+    ],
+    "formatted_response": {
+        "embeddings": [
+          {
+            "embedding": [
+              1,
+              2
+            ],
+            "index": 0
+          },
+          {
+            "embedding": [
+              2,
+              3
+            ],
+            "index": 1
+          },
+          {
+            "embedding": [
+              3,
+              4
+            ],
+            "index": 2
+          }
+        ]
+      },
+    "api_response": {
+        "object": "list",
+        "data": [
+            {
+                "object": "embedding",
+                "index": 0,
+                "embedding": [1,2]
+            },
+            {
+                "object": "embedding",
+                "index": 1,
+                "embedding": [2,3]
+            },
+            {
+                "object": "embedding",
+                "index": 2,
+                "embedding": [3,4]
+            }
+        ],
+        "model": "text-embedding-3-small",
+        "usage": {
+            "prompt_tokens": 9,
+            "total_tokens": 9
+        }
+    }
+}

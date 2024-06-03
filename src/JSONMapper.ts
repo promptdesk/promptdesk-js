@@ -29,6 +29,13 @@ export class JSONMapper {
         return !isNaN(Number(s));
     }
 
+    private wrapInArray(value: any): any {
+        if (typeof value === 'string') {
+            return [{ type: 'text', text: value }];
+        }
+        return value;
+    }
+
     getFromDict(dataDict: any, mapPath: string | null, defaultValue: any): any {
         if (mapPath === null) {
             return defaultValue;
@@ -78,8 +85,14 @@ export class JSONMapper {
         return collectedValues.length ? collectedValues : result;
     }
 
+    private appendArrayToArray(target: any[], source: any[]): void {
+        if (Array.isArray(target) && Array.isArray(source)) {
+            target.push(...source);
+        }
+    }
+
     applySubrules(sourceItem: any, subrules: any[]): any {
-        let tempObject = {};
+        let tempObject: any = {};
         for (let subrule of subrules) {
             let sourceValue = this.getFromDict(sourceItem, subrule['sourceField'], subrule['default'] || null);
             if (sourceValue === null) {
@@ -89,7 +102,40 @@ export class JSONMapper {
             if (subrule.hasOwnProperty("transformation")) {
                 sourceValue = this.transformValue(sourceValue, subrule["transformation"]);
             }
-            this.setInDict(tempObject, subrule['targetField'], sourceValue, subrule['appendTo'] || false, subrule['prependTo'] || false);
+            if ("conditions" in subrule) {
+                let isConditionMet = this.checkConditions(subrule["conditions"], sourceItem, subrule);
+                if (!isConditionMet) {
+                    continue;
+                }
+            }
+            if (subrule['appendTo'] || subrule['prependTo']) {
+                if (!tempObject[subrule['targetField']]) {
+                    tempObject[subrule['targetField']] = [];
+                }
+                if (Array.isArray(sourceValue)) {
+                    if (subrule['appendTo']) {
+                        tempObject[subrule['targetField']].push(...sourceValue);
+                    } else if (subrule['prependTo']) {
+                        tempObject[subrule['targetField']].unshift(...sourceValue);
+                    }
+                } else {
+                    if (subrule['appendTo']) {
+                        tempObject[subrule['targetField']].push(sourceValue);
+                    } else if (subrule['prependTo']) {
+                        tempObject[subrule['targetField']].unshift(sourceValue);
+                    }
+                }
+            } else {
+                if (subrule['default'] === '*value') {
+                    tempObject = sourceValue;
+                } else {
+                    this.setInDict(tempObject, subrule['targetField'], sourceValue, subrule['appendTo'] || false, subrule['prependTo'] || false);
+                }
+            }
+            if (subrule.hasOwnProperty('subRules')) {
+                let subRuleResult = this.applySubrules(sourceValue, subrule['subRules']);
+                this.setInDict(tempObject, subrule['targetField'], subRuleResult, subrule['appendTo'] || false, subrule['prependTo'] || false);
+            }
         }
         return tempObject;
     }
@@ -116,14 +162,24 @@ export class JSONMapper {
 
         if (appendTo || prependTo) {
             const lastKey = keys[keys.length - 1];
-            // Ensure the target is a list
-            if (!dataDict[lastKey] || !Array.isArray(dataDict[lastKey])) {
+            if (!dataDict[lastKey]) {
                 dataDict[lastKey] = [];
             }
             if (appendTo) {
-                dataDict[lastKey].push(value);
+                if (Array.isArray(value)) {
+                    this.appendArrayToArray(dataDict[lastKey], value);
+                } else {
+                    dataDict[lastKey].push(value);
+                }
             } else if (prependTo) {
-                dataDict[lastKey].unshift(value);
+                if (!dataDict[lastKey]) {
+                    dataDict[lastKey] = [];
+                }
+                if (Array.isArray(value)) {
+                    dataDict[lastKey].unshift(...value);
+                } else {
+                    dataDict[lastKey].unshift(value);
+                }
             }
         } else {
             // Handle the last key for direct set
@@ -159,6 +215,8 @@ export class JSONMapper {
                 return value.toLowerCase();
             } else if (condition === "strip") {
                 return value.trim();
+            } else if (condition === "wrapInArray") {
+                return this.wrapInArray(value);
             }
         }
 
