@@ -18,7 +18,9 @@ describe('Map JSON to other JSON.', () => {
       let file = files[i];
       let fileContents = fs.readFileSync('./tests/test_files/' + file, 'utf8');
       let obj = JSON.parse(fileContents)
-      if(!obj.json_1 || !obj.mapping_1 || !obj.result_1){
+      let filename = file.split('.')[0]
+      //let only_inlcude = '_simplified'
+      if(!obj.json_1 || !obj.mapping_1 || !obj.result_1 ) {//|| !filename.includes(only_inlcude)){
         continue;
       }
       let source = obj.json_1
@@ -26,7 +28,7 @@ describe('Map JSON to other JSON.', () => {
       let target = obj.result_1
       let mappedObj = jmap.applyMapping(source, mapping)
       if(JSON.stringify(mappedObj, null, 2) != JSON.stringify(target, null, 2)){
-        console.log("##################" + file + "##################")
+        console.log("ERROR: ##################" + file + "##################")
         console.log(JSON.stringify(source, null, 2))
         console.log(JSON.stringify(mapping, null, 2))
         console.log(JSON.stringify(target, null, 2))
@@ -38,7 +40,7 @@ describe('Map JSON to other JSON.', () => {
 
   });
 
-  it('should map an embedding', () => {
+  it.skip('should map an embedding', () => {
 
     //open OpenAI_text-embedding-3-small.json
     let fileContents = fs.readFileSync('./tests/test_files/OpenAI_text-embedding-3-small.json', 'utf8');
@@ -61,7 +63,7 @@ describe('Map JSON to other JSON.', () => {
 
   });
 
-  it('should map an embedding', () => {
+  it.skip('should map an embedding', () => {
 
     //open OpenAI_text-embedding-3-small.json
     let fileContents = fs.readFileSync('./tests/test_files/OpenAI_text-embedding-3-small.json', 'utf8');

@@ -94,7 +94,7 @@ export class JSONMapper {
     applySubrules(sourceItem: any, subrules: any[]): any {
         let tempObject: any = {};
         for (let subrule of subrules) {
-            let sourceValue = this.getFromDict(sourceItem, subrule['sourceField'], subrule['default'] || null);
+            let sourceValue = subrule['sourceField'] === '*value' ? sourceItem : this.getFromDict(sourceItem, subrule['sourceField'], subrule['default'] || null);
             if (sourceValue === null) {
                 sourceValue = subrule['default'];
             }
@@ -108,9 +108,19 @@ export class JSONMapper {
                     continue;
                 }
             }
+            if (subrule.hasOwnProperty('subRules')) {
+                if (Array.isArray(sourceValue)) {
+                    sourceValue = sourceValue.map(item => this.applySubrules(item, subrule['subRules']));
+                } else {
+                    sourceValue = this.applySubrules(sourceValue, subrule['subRules']);
+                }
+            }
             if (subrule['appendTo'] || subrule['prependTo']) {
                 if (!tempObject[subrule['targetField']]) {
                     tempObject[subrule['targetField']] = [];
+                }
+                if (!Array.isArray(tempObject[subrule['targetField']])) {
+                    tempObject[subrule['targetField']] = [tempObject[subrule['targetField']]];
                 }
                 if (Array.isArray(sourceValue)) {
                     if (subrule['appendTo']) {
@@ -126,15 +136,11 @@ export class JSONMapper {
                     }
                 }
             } else {
-                if (subrule['default'] === '*value') {
-                    tempObject = sourceValue;
+                if (subrule['sourceField'] === '*value' && typeof sourceValue !== 'string') {
+                    tempObject = { ...tempObject, ...sourceValue };
                 } else {
                     this.setInDict(tempObject, subrule['targetField'], sourceValue, subrule['appendTo'] || false, subrule['prependTo'] || false);
                 }
-            }
-            if (subrule.hasOwnProperty('subRules')) {
-                let subRuleResult = this.applySubrules(sourceValue, subrule['subRules']);
-                this.setInDict(tempObject, subrule['targetField'], subRuleResult, subrule['appendTo'] || false, subrule['prependTo'] || false);
             }
         }
         return tempObject;

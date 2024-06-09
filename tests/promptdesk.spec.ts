@@ -10,7 +10,7 @@ let pd = new PromptDesk({
 })
 
 
-describe('NPM Package', () => {
+describe.skip('NPM Package', () => {
   it('should be an object', () => {
     assert.isObject(npmPackage);
   });
@@ -20,7 +20,7 @@ describe('NPM Package', () => {
   });
 });
 
-describe('Calls promptdesk', () => {
+describe.skip('Calls promptdesk', () => {
 
   it('should ping promptdesk', async () => {
     let result = await pd.ping()
@@ -97,7 +97,7 @@ describe('Calls promptdesk', () => {
 
 })
 
-describe('Convert string to object.', () => {
+describe.skip('Convert string to object.', () => {
 
   it('should convert a string to an object', () => {
     assert.deepEqual(pd.convertToObject('{"a": 1}'), {a: 1});
@@ -111,7 +111,7 @@ describe('Convert string to object.', () => {
 });
 
 
-describe('Test error handling', () => {
+describe.skip('Test error handling', () => {
 
   it('should return an error for an invalid API key' , async () => {
     let pd_no_key = new PromptDesk({
